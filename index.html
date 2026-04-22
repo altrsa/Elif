@@ -129,16 +129,17 @@ body {
 
     #container {
         grid-template-columns: 1fr;
+        gap: 20px;           /* ← нормальный отступ между карточками */
+        padding: 20px;       /* ← отступ от краёв экрана */
     }
 
-    /* ВОТ ГЛАВНОЕ — уменьшаем карточку */
     .card {
-        height: 65vh;
-        max-height: 500px;
+        height: 60vh;        /* чуть компактнее */
+        max-height: 480px;
     }
 
     #container.test-mode .card {
-        width: 90vw;
+        width: 88vw;
     }
 
     .menu button {

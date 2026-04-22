@@ -7,7 +7,7 @@
 <style>
 body {
     margin: 0;
-    font-family: Arial;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     background: #000;
 }
 
@@ -22,11 +22,32 @@ body {
     z-index: 10;
 }
 
+/* iOS кнопки */
 .menu button {
-    padding: 10px 15px;
-    cursor: pointer;
+    padding: 14px 22px;
+    font-size: 16px;
+    font-weight: 500;
+
+    background: #f2f2f7;
+    color: #000;
+
     border: none;
-    border-radius: 6px;
+    border-radius: 14px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+
+    transition: all 0.15s ease;
+}
+
+.menu button:active {
+    transform: scale(0.96);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* активная */
+.menu button.active {
+    background: #007aff;
+    color: #fff;
 }
 
 /* СЕТКА */
@@ -104,7 +125,7 @@ body {
     }
 }
 
-/* ===== МОБИЛКА ===== */
+/* МОБИЛКА */
 @media (max-width: 600px) {
 
     #container {
@@ -113,22 +134,18 @@ body {
         padding: 12px;
     }
 
-    .card {
-        aspect-ratio: 2 / 3;
-    }
-
-    .side img {
-        border-radius: 8px;
-    }
-
-    /* тест режим */
     #container.test-mode .card {
         width: 92vw;
         max-width: none;
     }
+
+    .menu button {
+        font-size: 18px;
+        padding: 16px 24px;
+        border-radius: 16px;
+    }
 }
 
-/* очень маленькие экраны */
 @media (max-width: 400px) {
     #container {
         grid-template-columns: 1fr;
@@ -140,8 +157,8 @@ body {
 <body>
 
 <div class="menu">
-    <button onclick="modeAll()">Her şeyi karıştır</button>
-    <button onclick="modeTest()">Test</button>
+    <button onclick="modeAll(this)" class="active">Her şeyi karıştır</button>
+    <button onclick="modeTest(this)">Test</button>
 </div>
 
 <div id="container"></div>
@@ -174,7 +191,14 @@ function clear() {
     container.innerHTML = '';
 }
 
-function modeAll() {
+/* активная кнопка */
+function setActive(btn) {
+    document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function modeAll(btn) {
+    setActive(btn);
     container.classList.remove('test-mode');
     clear();
     shuffle(cardsData);
@@ -202,7 +226,8 @@ function modeAll() {
     });
 }
 
-function modeTest() {
+function modeTest(btn) {
+    setActive(btn);
     container.classList.add('test-mode');
     clear();
     nextTestCard();
@@ -241,177 +266,7 @@ function nextTestCard() {
     container.appendChild(card);
 }
 
-modeAll();
-</script>
-
-</body>
-</html>
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-/* ВНУТРЕННИЙ */
-.inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s;
-}
-
-.card.flip .inner {
-    transform: rotateY(180deg);
-}
-
-/* СТОРОНЫ */
-.side {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-}
-
-.side img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 10px;
-}
-
-/* ОБРАТНАЯ */
-.back {
-    transform: rotateY(180deg);
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* МОБИЛКА */
-@media (max-width: 600px) {
-    #container {
-        grid-template-columns: 1fr;
-    }
-
-    /* на мобиле чуть шире */
-    #container.test-mode .card {
-        width: 90vw;
-    }
-}
-</style>
-
-</head>
-<body>
-
-<div class="menu">
-    <button onclick="modeAll()">Her şeyi karıştır</button>
-    <button onclick="modeTest()">Test</button>
-</div>
-
-<div id="container"></div>
-
-<script>
-const container = document.getElementById('container');
-const totalPages = 34;
-
-function pad(n) {
-    return n.toString().padStart(2, '0');
-}
-
-let cardsData = [];
-
-for (let i = 2; i <= totalPages; i += 2) {
-    cardsData.push({
-        question: `page-${pad(i)}.png`,
-        emperor: `page-${pad(i - 1)}.png`
-    });
-}
-
-function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-}
-
-function clear() {
-    container.innerHTML = '';
-}
-
-function modeAll() {
-    container.classList.remove('test-mode');
-    clear();
-    shuffle(cardsData);
-
-    cardsData.forEach(data => {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        card.innerHTML = `
-            <div class="inner">
-                <div class="side front">
-                    <img src="${data.question}">
-                </div>
-                <div class="side back">
-                    <img src="${data.emperor}">
-                </div>
-            </div>
-        `;
-
-        card.addEventListener('click', () => {
-            card.classList.toggle('flip');
-        });
-
-        container.appendChild(card);
-    });
-}
-
-function modeTest() {
-    container.classList.add('test-mode');
-    clear();
-    nextTestCard();
-}
-
-function nextTestCard() {
-    clear();
-
-    const data = cardsData[Math.floor(Math.random() * cardsData.length)];
-
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    card.innerHTML = `
-        <div class="inner">
-            <div class="side front">
-                <img src="${data.question}">
-            </div>
-            <div class="side back">
-                <img src="${data.emperor}">
-            </div>
-        </div>
-    `;
-
-    let flipped = false;
-
-    card.addEventListener('click', () => {
-        if (!flipped) {
-            card.classList.add('flip');
-            flipped = true;
-        } else {
-            nextTestCard();
-        }
-    });
-
-    container.appendChild(card);
-}
-
-modeAll();
+modeAll(document.querySelector('.menu button'));
 </script>
 
 </body>
